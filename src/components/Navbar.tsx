@@ -1,100 +1,105 @@
 
-import { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
-import { Button } from './ui/button';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ShoppingCart, Menu, User } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useCart } from "@/contexts/CartContext";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const { itemCount } = useCart();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   return (
-    <header 
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
-      }`}
-    >
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between">
-          <a href="#" className="flex items-center">
-            <span className="font-poppins font-bold text-2xl text-ksdm-navy">KSDM<span className="text-ksdm-gold">LLC</span></span>
-          </a>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex gap-8 items-center">
-            <a href="#about" className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors">About</a>
-            <a href="#verticals" className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors">Ventures</a>
-            <a href="#portfolio" className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors">Portfolio</a>
-            <a href="#global" className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors">Global Presence</a>
-            <a href="#contact" className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors">Contact</a>
-            <Button className="bg-ksdm-navy hover:bg-blue-900 text-white">Invest Now</Button>
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      <div className="container mx-auto px-4 flex justify-between items-center h-16">
+        <div className="flex items-center space-x-10">
+          <Link to="/" className="text-2xl font-bold text-ksdm-navy">
+            KSDM
+          </Link>
+          <nav className="hidden md:flex space-x-8">
+            <Link to="/clothing" className="text-gray-700 hover:text-ksdm-gold transition-colors">
+              Clothing
+            </Link>
+            <Link to="/accessories" className="text-gray-700 hover:text-ksdm-gold transition-colors">
+              Accessories
+            </Link>
+            <Link to="/collections" className="text-gray-700 hover:text-ksdm-gold transition-colors">
+              Collections
+            </Link>
           </nav>
-
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden text-gray-700" 
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <nav className="md:hidden py-4 flex flex-col gap-4">
-            <a 
-              href="#about" 
-              className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              About
-            </a>
-            <a 
-              href="#verticals" 
-              className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Ventures
-            </a>
-            <a 
-              href="#portfolio" 
-              className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Portfolio
-            </a>
-            <a 
-              href="#global" 
-              className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Global Presence
-            </a>
-            <a 
-              href="#contact" 
-              className="font-medium text-gray-700 hover:text-ksdm-navy transition-colors py-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Contact
-            </a>
-            <Button className="bg-ksdm-navy hover:bg-blue-900 text-white mt-2 w-full">
-              Invest Now
-            </Button>
-          </nav>
-        )}
+        
+        <div className="flex items-center space-x-4">
+          <Link to="/cart" className="text-gray-700 hover:text-ksdm-gold transition-colors relative">
+            <ShoppingCart size={20} />
+            {itemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-ksdm-gold text-ksdm-navy text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+          </Link>
+          
+          {isMobile ? (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu size={20} />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="sm:hidden">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                  <SheetDescription>
+                    Explore KSDM
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="grid gap-4 py-4">
+                  <Link to="/clothing" className="text-gray-700 hover:text-ksdm-gold transition-colors block py-2">
+                    Clothing
+                  </Link>
+                  <Link to="/accessories" className="text-gray-700 hover:text-ksdm-gold transition-colors block py-2">
+                    Accessories
+                  </Link>
+                  <Link to="/collections" className="text-gray-700 hover:text-ksdm-gold transition-colors block py-2">
+                    Collections
+                  </Link>
+                </div>
+              </SheetContent>
+            </Sheet>
+          ) : null}
+          
+          <div className="ml-2 relative group">
+            <Link to="/profile" className="text-ksdm-navy hover:text-ksdm-gold transition-colors">
+              <User size={20} />
+            </Link>
+            <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-md py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-ksdm-gold">
+                Profile
+              </Link>
+              <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-ksdm-gold">
+                Settings
+              </Link>
+              <div className="border-t border-gray-100 my-1"></div>
+              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-ksdm-gold">
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );
